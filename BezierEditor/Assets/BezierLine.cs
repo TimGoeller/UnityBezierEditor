@@ -4,7 +4,84 @@ public class BezierLine
 {
     private Vector3[] points = new Vector3[4];
 
-    public BezierLine previousLine;
+    private BezierPoint start;
+    private BezierPoint end;
+    private Vector3 startHandle;
+    private Vector3 endHandle;
+
+    public Vector3 Start
+    {
+        get
+        {
+            return start;
+        }
+        set
+        {
+            if(start != value)
+            {
+                Vector3 movementDelta = value - start;
+                start.position = PreprocessPoint(value);
+                startHandle += movementDelta;
+                if (previousLine != null)
+                    previousLine.endHandle += movementDelta;
+            }
+        }
+    }
+
+    public Vector3 End
+    {
+        get
+        {
+            return end;
+        }
+        set
+        {
+            if(end != value)
+            {
+                Vector3 movementDelta = value - end;
+                end.position = PreprocessPoint(value);
+                endHandle += movementDelta;
+                if (nextLine != null)
+                    nextLine.startHandle += movementDelta;
+            }
+        }
+    }
+
+    public Vector3 StartHandle
+    {
+        get
+        {
+            return startHandle;
+        }
+        set
+        {
+            if(startHandle != value)
+            {
+                startHandle = PreprocessPoint(value);
+                if (previousLine != null)
+                    previousLine.endHandle = start + (start - startHandle);
+            }
+        }
+    }
+
+    public Vector3 EndHandle
+    {
+        get
+        {
+            return endHandle;
+        }
+        set
+        {
+            if(endHandle != value)
+            {
+                endHandle = PreprocessPoint(value);
+                if (nextLine != null)
+                    nextLine.startHandle = end + (end - endHandle);
+            }
+        }
+    }
+
+    private BezierLine previousLine;
     public BezierLine nextLine;
 
     public enum BezierPoints
@@ -12,17 +89,19 @@ public class BezierLine
         StartPoint = 0, EndPoint = 1, StartHandle = 2, EndHandle = 3
     }
 
-    public BezierLine(Vector3 startPoint, Vector3 endPoint, Vector3 startHandle, Vector3 endHandle)
+    public BezierLine(BezierLine previousLine, Vector3 endPoint)
     {
-        startPoint.y = 0;
-        endPoint.y = 0;
-        startHandle.y = 0;
-        endHandle.y = 0;
+        SetPreviousLine(previousLine);
+        end = new BezierPoint(endPoint);
+        endHandle = end + Vector3.forward;
+    }
 
-        points[(int)BezierPoints.StartPoint] = startPoint;
-        points[(int)BezierPoints.EndPoint] = endPoint;
-        points[(int)BezierPoints.StartHandle] = startHandle;
-        points[(int)BezierPoints.EndHandle] = endHandle;
+    public BezierLine(Vector3 startPoint, Vector3 endPoint)
+    {
+        start = new BezierPoint(startPoint);
+        end = new BezierPoint(endPoint);
+        startHandle = start + Vector3.forward;
+        endHandle = end + Vector3.forward;
     }
 
     public void SetPreviousLine(BezierLine previousLine)
@@ -30,64 +109,12 @@ public class BezierLine
         this.previousLine = previousLine;
         previousLine.nextLine = this;
 
-        points[(int)BezierPoints.StartPoint] = previousLine.GetPoint(BezierPoints.EndPoint);
-        points[(int)BezierPoints.StartHandle] = points[(int)BezierPoints.StartPoint] - (previousLine.GetPoint(BezierPoints.EndHandle) - points[(int)BezierPoints.StartPoint]);
+        start = previousLine.end;
+        startHandle = start - (previousLine.endHandle - start);
     }
 
-    public void MovePoint(BezierPoints index, Vector3 newPosition)
+    public Vector3 PreprocessPoint(Vector3 point)
     {
-        newPosition.y = 0;
-        if (newPosition != points[(int)index])
-        {
-            switch (index)
-            {
-                case BezierPoints.StartPoint: //endPoint
-                    points[(int)BezierPoints.StartHandle] += newPosition - points[(int)BezierPoints.StartPoint];
-
-                    if (previousLine != null)
-                    {
-                        previousLine.SetPoint(BezierPoints.EndPoint, points[(int)BezierPoints.StartPoint]);
-                        previousLine.SetPoint(BezierPoints.EndHandle, newPosition - (points[(int)BezierPoints.StartHandle] - newPosition));
-                    }
-
-                    points[(int)BezierPoints.StartPoint] = newPosition;
-                    break;
-                case BezierPoints.EndPoint: //endPoint
-                    points[(int)BezierPoints.EndHandle] += newPosition - points[(int)BezierPoints.EndPoint];
-
-                    if (nextLine != null)
-                    {
-                        nextLine.SetPoint(BezierPoints.StartPoint, points[(int)BezierPoints.EndPoint]);
-                        nextLine.SetPoint(BezierPoints.StartHandle, newPosition - (points[(int)BezierPoints.EndHandle] - newPosition));
-                    }
-
-                    points[(int)BezierPoints.EndPoint] = newPosition;
-                    break;
-                case BezierPoints.StartHandle: //endPoint
-                    points[(int)BezierPoints.StartHandle] = newPosition;
-                    if (previousLine != null)
-                    {
-                        previousLine.SetPoint(BezierPoints.EndHandle, points[(int)BezierPoints.StartPoint] - (newPosition - points[(int)BezierPoints.StartPoint]));
-                    }
-                    break;
-                case BezierPoints.EndHandle: //endPoint
-                    points[(int)BezierPoints.EndHandle] = newPosition;
-                    if (nextLine != null)
-                    {
-                        nextLine.SetPoint(BezierPoints.StartHandle, points[(int)BezierPoints.EndPoint] - (newPosition - points[(int)BezierPoints.EndPoint]));
-                    }
-                    break;
-            }
-        }
-    }
-
-    public Vector3 GetPoint(BezierPoints index)
-    {
-        return points[(int)index];
-    }
-
-    public void SetPoint(BezierPoints index, Vector3 newPos)
-    {
-        points[(int)index] = newPos;
+        return point;
     }
 }

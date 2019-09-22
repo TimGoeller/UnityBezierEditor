@@ -41,23 +41,23 @@ public class PolylineCreatorEditor : Editor
         BezierLine current = polylineCreator.start;
         do
         {
-            Handles.DrawBezier(current.GetPoint(StartPoint), current.GetPoint(EndPoint),
-                current.GetPoint(StartHandle), current.GetPoint(EndHandle), Color.blue, null, 5f);
+            Handles.DrawBezier(current.Start, current.End,
+                current.StartHandle, current.EndHandle, Color.blue, null, 5f);
 
             Handles.color = Color.red;
-            current.MovePoint(StartPoint, Handles.FreeMoveHandle(current.GetPoint(StartPoint), Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap));
+            current.Start = Handles.FreeMoveHandle(current.Start, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
 
             if (!polylineCreator.closed && current.nextLine == null)
             {
-                current.MovePoint(EndPoint, Handles.FreeMoveHandle(current.GetPoint(EndPoint), Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap));
+                current.End = Handles.FreeMoveHandle(current.End, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
             }
 
             Handles.color = Color.green;
-            current.MovePoint(StartHandle, Handles.FreeMoveHandle(current.GetPoint(StartHandle), Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap));
-            current.MovePoint(EndHandle, Handles.FreeMoveHandle(current.GetPoint(EndHandle), Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap));
+            current.StartHandle = Handles.FreeMoveHandle(current.StartHandle, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
+            current.EndHandle = Handles.FreeMoveHandle(current.EndHandle, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
             Handles.color = Color.white;
-            Handles.DrawDottedLine(current.GetPoint(StartPoint), current.GetPoint(StartHandle), .5f);
-            Handles.DrawDottedLine(current.GetPoint(EndPoint), current.GetPoint(EndHandle), .5f);
+            Handles.DrawDottedLine(current.Start, current.StartHandle, .5f);
+            Handles.DrawDottedLine(current.End, current.EndHandle, .5f);
 
             current = current.nextLine;
         } while (current != polylineCreator.start && current != null);
@@ -84,7 +84,7 @@ public class PolylineCreatorEditor : Editor
             }
         }
 
-        
+
     }
 
     void OnEnable()
