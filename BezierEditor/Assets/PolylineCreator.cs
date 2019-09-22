@@ -9,37 +9,37 @@ public class PolylineCreator : MonoBehaviour
 
     public void AddLine(Vector3 endPoint)
     {
-        if(closed)
+        if (closed)
         {
             BezierLine current = start;
             float lowestMangitude = float.MaxValue;
             BezierLine currentClosest = current;
             while (current.nextLine != null)
             {
-                float magnitude = ((endPoint - current.GetPoint(BezierLine.BezierPoints.StartPoint)) + (endPoint - current.GetPoint(BezierLine.BezierPoints.EndPoint))).magnitude;
+                float magnitude = ((endPoint - current.Start) + (endPoint - current.End)).magnitude;
 
-                if(magnitude < lowestMangitude)
+                if (magnitude < lowestMangitude)
                 {
                     lowestMangitude = magnitude;
                     currentClosest = current;
                 }
                 current = current.nextLine;
             }
-            BezierLine newLine = new BezierLine(Vector3.zero, endPoint, Vector3.zero, endPoint + Vector3.forward);
+            BezierLine newLine = new BezierLine(currentClosest, endPoint);
             newLine.SetPreviousLine(currentClosest);
         }
         else
         {
             BezierLine currentLast = GetLastLine();
-            BezierLine newLine = new BezierLine(Vector3.zero, endPoint, Vector3.zero, endPoint + Vector3.forward);
+            BezierLine newLine = new BezierLine(currentLast, endPoint);
             newLine.SetPreviousLine(currentLast);
         }
-        
+
     }
 
     public void CreateStart()
     {
-        start = new BezierLine(transform.position, transform.position + Vector3.right, transform.position + Vector3.forward, transform.position + Vector3.right + Vector3.back);
+        start = new BezierLine(transform.position, transform.position + Vector3.right);
         closed = false;
     }
 
@@ -58,7 +58,7 @@ public class PolylineCreator : MonoBehaviour
     public void CloseLine()
     {
         BezierLine lastLine = GetLastLine();
-        BezierLine fillerLine = new BezierLine(lastLine.GetPoint(BezierLine.BezierPoints.EndPoint), start.GetPoint(BezierLine.BezierPoints.StartPoint), Vector3.zero, Vector3.zero);
+        BezierLine fillerLine = new BezierLine(lastLine.End, start.Start);
         fillerLine.SetPreviousLine(lastLine);
         start.SetPreviousLine(fillerLine);
         closed = true;
