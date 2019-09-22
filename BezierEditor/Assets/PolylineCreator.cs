@@ -14,7 +14,8 @@ public class PolylineCreator : MonoBehaviour
             BezierLine current = start;
             float lowestMangitude = float.MaxValue;
             BezierLine currentClosest = current;
-            while (current.nextLine != null)
+
+            do
             {
                 float magnitude = ((endPoint - current.Start) + (endPoint - current.End)).magnitude;
 
@@ -25,8 +26,11 @@ public class PolylineCreator : MonoBehaviour
                 }
                 current = current.nextLine;
             }
+            while (current.nextLine != start);
+
+            BezierLine currentClosestNext = currentClosest.nextLine;
             BezierLine newLine = new BezierLine(currentClosest, endPoint);
-            newLine.SetPreviousLine(currentClosest);
+            currentClosestNext.SetPreviousLine(newLine);
         }
         else
         {
