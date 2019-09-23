@@ -45,11 +45,11 @@ public class PolylineCreatorEditor : Editor
                 current.StartHandle, current.EndHandle, Color.blue, null, 5f);
 
             Handles.color = Color.red;
-            current.Start = Handles.FreeMoveHandle(current.Start, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
+            current.Start = Handles.FreeMoveHandle(current.Start, Quaternion.identity, .1f, Vector2.zero, Handles.SphereHandleCap);
 
             if (!polylineCreator.closed && current.nextLine == null)
             {
-                current.End = Handles.FreeMoveHandle(current.End, Quaternion.identity, .1f, Vector2.zero, Handles.CubeHandleCap);
+                current.End = Handles.FreeMoveHandle(current.End, Quaternion.identity, .1f, Vector2.zero, Handles.SphereHandleCap);
             }
 
             Handles.color = Color.green;
