@@ -68,5 +68,36 @@ public class PolylineCreator : MonoBehaviour
         closed = true;
     }
 
+    public List<Vector3> GetPolyline(int resolution)
+    {
+        List<Vector3> points = new List<Vector3>();
+
+        BezierLine current = start;
+
+        do
+        {
+
+            for (int i = 0; i < resolution; i++)
+            {
+                float step = ((float)i / resolution);
+                Debug.Log(step);
+                Vector3 pointA = Vector3.Lerp(current.Start, current.StartHandle, step);
+                Vector3 pointB = Vector3.Lerp(current.StartHandle, current.EndHandle, step);
+                Vector3 pointC = Vector3.Lerp(current.EndHandle, current.End, step);
+
+                Vector3 pointAB = Vector3.Lerp(pointA, pointB, step);
+                Vector3 pointBC = Vector3.Lerp(pointB, pointC, step);
+
+                points.Add(Vector3.Lerp(pointAB, pointBC, step));
+                Debug.Log(Vector3.Lerp(pointAB, pointBC, step).ToString());
+            }
+
+            current = current.nextLine;
+        }
+        while (current != start);
+
+        return points;
+    }
+
 }
 

@@ -17,8 +17,9 @@ public class BezierLine
         {
             if(start != value)
             {
+                value = PreprocessPoint(value);
                 Vector3 movementDelta = value - start;
-                start.position = PreprocessPoint(value);
+                start.position = value;
                 startHandle += movementDelta;
                 if (previousLine != null)
                     previousLine.endHandle += movementDelta;
@@ -36,8 +37,9 @@ public class BezierLine
         {
             if(end != value)
             {
+                value = PreprocessPoint(value);
                 Vector3 movementDelta = value - end;
-                end.position = PreprocessPoint(value);
+                end.position = value;
                 endHandle += movementDelta;
                 if (nextLine != null)
                     nextLine.startHandle += movementDelta;
@@ -113,6 +115,7 @@ public class BezierLine
 
     public Vector3 PreprocessPoint(Vector3 point)
     {
+        point.y = 0;
         return point;
     }
 }
