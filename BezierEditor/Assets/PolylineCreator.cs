@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class PolylineCreator : MonoBehaviour
 {
     public BezierLine start;
     public bool closed;
+    public bool drawLine = true;
 
     public void AddLine(Vector3 endPoint)
     {
@@ -76,7 +79,6 @@ public class PolylineCreator : MonoBehaviour
 
         do
         {
-
             for (int i = 0; i < resolution; i++)
             {
                 float step = ((float)i / resolution);

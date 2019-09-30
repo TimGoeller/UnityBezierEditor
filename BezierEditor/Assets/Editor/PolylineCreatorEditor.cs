@@ -8,11 +8,9 @@ public class PolylineCreatorEditor : Editor
 {
     PolylineCreator polylineCreator;
 
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
 
-        EditorGUI.BeginChangeCheck();
+    public override void OnInspectorGUI()
+    {        
         if (GUILayout.Button("Close line"))
         {
             polylineCreator.CloseLine();
@@ -22,6 +20,8 @@ public class PolylineCreatorEditor : Editor
         {
             polylineCreator.CreateStart();
         }
+
+        polylineCreator.drawLine = EditorGUILayout.Toggle("Draw", polylineCreator.drawLine);
     }
 
     void OnSceneGUI()
@@ -31,7 +31,8 @@ public class PolylineCreatorEditor : Editor
             polylineCreator.CreateStart();
         }
         Input();
-        Draw();
+        if(polylineCreator.drawLine)
+            Draw();
     }
 
     private void Draw()
