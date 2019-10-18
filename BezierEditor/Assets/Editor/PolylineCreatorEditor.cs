@@ -21,6 +21,11 @@ public class PolylineCreatorEditor : Editor
             polylineCreator.CreateStart();
         }
 
+        if (GUILayout.Button("Export polyline"))
+        {
+            polylineCreator.ExportAsPolyline();
+        }
+
         polylineCreator.drawLine = EditorGUILayout.Toggle("Draw", polylineCreator.drawLine);
     }
 

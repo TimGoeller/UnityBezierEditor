@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEditor;
 using UnityEngine;
 
 [Serializable]
@@ -9,6 +12,7 @@ public class PolylineCreator : MonoBehaviour
     public BezierLine start;
     public bool closed;
     public bool drawLine = true;
+    public int exportResolution = 5;
 
     public void AddLine(Vector3 endPoint)
     {
@@ -71,7 +75,37 @@ public class PolylineCreator : MonoBehaviour
         closed = true;
     }
 
-    public List<Vector3> GetPolyline(int resolution)
+    //public List<Vector3> GetPolyline(int resolution)
+    //{
+    //    List<Vector3> points = new List<Vector3>();
+
+    //    BezierLine current = start;
+
+    //    do
+    //    {
+    //        for (int i = 0; i < resolution; i++)
+    //        {
+    //            float step = ((float)i / resolution);
+    //            Debug.Log(step);
+    //            Vector3 pointA = Vector3.Lerp(current.Start, current.StartHandle, step);
+    //            Vector3 pointB = Vector3.Lerp(current.StartHandle, current.EndHandle, step);
+    //            Vector3 pointC = Vector3.Lerp(current.EndHandle, current.End, step);
+
+    //            Vector3 pointAB = Vector3.Lerp(pointA, pointB, step);
+    //            Vector3 pointBC = Vector3.Lerp(pointB, pointC, step);
+
+    //            points.Add(Vector3.Lerp(pointAB, pointBC, step));
+    //            Debug.Log(Vector3.Lerp(pointAB, pointBC, step).ToString());
+    //        }
+
+    //        current = current.nextLine;
+    //    }
+    //    while (current != start);
+
+    //    return points;
+    //}
+
+    public void ExportAsPolyline()
     {
         List<Vector3> points = new List<Vector3>();
 
@@ -79,9 +113,9 @@ public class PolylineCreator : MonoBehaviour
 
         do
         {
-            for (int i = 0; i < resolution; i++)
+            for (int i = 0; i < exportResolution; i++)
             {
-                float step = ((float)i / resolution);
+                float step = ((float)i / exportResolution);
                 Debug.Log(step);
                 Vector3 pointA = Vector3.Lerp(current.Start, current.StartHandle, step);
                 Vector3 pointB = Vector3.Lerp(current.StartHandle, current.EndHandle, step);
@@ -98,7 +132,14 @@ public class PolylineCreator : MonoBehaviour
         }
         while (current != start);
 
-        return points;
+        Polyline polyline = ScriptableObject.CreateInstance<Polyline>();
+        polyline.nodes = points;
+
+        //string dataAsJson = JsonUtility.ToJson(polyline);
+        //File.WriteAllText(Application.dataPath + "/new_polyline.json", dataAsJson);
+        //UnityEditor.AssetDatabase.Refresh();
+
+        AssetDatabase.CreateAsset(polyline, "Assets/MyPolyline.asset");
     }
 
 }
